@@ -1,0 +1,153 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+#
+# sgl-telemetry-collect — Collect system telemetry for Space Grade Linux
+#
+# Gathers kernel, hardware, and EDAC error data into a JSON report
+# suitable for upload to the SGL telemetry platform.
+
+set -e
+
+OUTPUT_DIR="${1:-/tmp/sgl-telemetry}"
+TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+REPORT_DIR="${OUTPUT_DIR}/${TIMESTAMP}"
+REPORT_FILE="${REPORT_DIR}/report.json"
+
+mkdir -p "${REPORT_DIR}"
+
+# Helper: read a file if it exists, empty string otherwise
+read_file() {
+    if [ -f "$1" ]; then
+        cat "$1" 2>/dev/null || echo ""
+    else
+        echo ""
+    fi
+}
+
+# Helper: run a command, capture output, empty string on failure
+run_cmd() {
+    "$@" 2>/dev/null || echo ""
+}
+
+# Collect system identity
+KERNEL_VERSION=$(run_cmd uname -r)
+KERNEL_FULL=$(read_file /proc/version)
+ARCH=$(run_cmd uname -m)
+HOSTNAME=$(run_cmd uname -n)
+UPTIME_SECONDS=$(run_cmd cut -d' ' -f1 /proc/uptime)
+
+# Board/platform identity
+BOARD_MODEL=$(read_file /sys/firmware/devicetree/base/model | tr -d '\0')
+BOARD_COMPATIBLE=$(read_file /sys/firmware/devicetree/base/compatible | tr '\0' ',')
+DMI_PRODUCT=$(read_file /sys/class/dmi/id/product_name)
+DMI_BOARD=$(read_file /sys/class/dmi/id/board_name)
+
+# CPU info
+CPU_COUNT=$(run_cmd nproc)
+CPU_MODEL=$(grep -m1 'model name\|Hardware\|cpu\b' /proc/cpuinfo 2>/dev/null | head -n 1 | sed 's/.*: //')
+
+# Memory info
+MEM_TOTAL=$(grep MemTotal /proc/meminfo 2>/dev/null | awk '{print $2}')
+
+# SGL/distro info
+SGL_VERSION=$(read_file /etc/sgl-version)
+DISTRO_INFO=$(read_file /etc/os-release)
+
+# EDAC data
+EDAC_DIR="/sys/devices/system/edac"
+edac_json=""
+if [ -d "${EDAC_DIR}/mc" ]; then
+    mc_index=0
+    edac_json="["
+    for mc in "${EDAC_DIR}"/mc/mc*; do
+        [ -d "$mc" ] || continue
+        mc_name=$(basename "$mc")
+        ce_count=$(read_file "${mc}/ce_count")
+        ue_count=$(read_file "${mc}/ue_count")
+        mc_name_str=$(read_file "${mc}/mc_name")
+        size_mb=$(read_file "${mc}/size_mb")
+
+        # Collect per-DIMM/csrow data
+        csrow_json=""
+        for csrow in "${mc}"/csrow*; do
+            [ -d "$csrow" ] || continue
+            csrow_name=$(basename "$csrow")
+            csrow_ce=$(read_file "${csrow}/ce_count")
+            csrow_ue=$(read_file "${csrow}/ue_count")
+            csrow_size=$(read_file "${csrow}/size_mb")
+            if [ -n "$csrow_json" ]; then csrow_json="${csrow_json},"; fi
+            csrow_json="${csrow_json}{\"name\":\"${csrow_name}\",\"ce_count\":${csrow_ce:-0},\"ue_count\":${csrow_ue:-0},\"size_mb\":${csrow_size:-0}}"
+        done
+
+        if [ $mc_index -gt 0 ]; then edac_json="${edac_json},"; fi
+        edac_json="${edac_json}{\"name\":\"${mc_name}\",\"mc_name\":\"${mc_name_str}\",\"ce_count\":${ce_count:-0},\"ue_count\":${ue_count:-0},\"size_mb\":${size_mb:-0},\"csrows\":[${csrow_json}]}"
+        mc_index=$((mc_index + 1))
+    done
+    edac_json="${edac_json}]"
+else
+    edac_json="[]"
+fi
+
+# EDAC message counts from kernel log
+EDAC_CE_DMESG=$(dmesg 2>/dev/null | grep 'EDAC.*CE' | wc -l | tr -d ' ')
+EDAC_UE_DMESG=$(dmesg 2>/dev/null | grep 'EDAC.*UE' | wc -l | tr -d ' ')
+MCE_COUNT=$(dmesg 2>/dev/null | grep 'mce:' | wc -l | tr -d ' ')
+
+# Extract EDAC/MCE/hardware error lines from dmesg
+dmesg 2>/dev/null | grep -iE 'edac|mce:|hardware error|memory error|ecc|single-bit|multi-bit|corrected error|uncorrected error' > "${REPORT_DIR}/dmesg_errors.log" 2>/dev/null || true
+
+# Copy rasdaemon database if available
+RASDAEMON_DB="/var/lib/rasdaemon/ras-mc_event.db"
+if [ -f "${RASDAEMON_DB}" ]; then
+    cp "${RASDAEMON_DB}" "${REPORT_DIR}/ras-mc_event.db" 2>/dev/null || true
+fi
+
+# Escape strings for JSON
+json_escape() {
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g; s/	/\\t/g' | tr '\n' ' '
+}
+
+# Build JSON report
+cat > "${REPORT_FILE}" <<EOF
+{
+  "schema_version": "1.0",
+  "collected_at": "${TIMESTAMP}",
+  "system": {
+    "kernel_version": "${KERNEL_VERSION}",
+    "kernel_full": "$(json_escape "${KERNEL_FULL}")",
+    "arch": "${ARCH}",
+    "hostname": "${HOSTNAME}",
+    "uptime_seconds": ${UPTIME_SECONDS:-0},
+    "cpu_count": ${CPU_COUNT:-0},
+    "cpu_model": "$(json_escape "${CPU_MODEL}")",
+    "mem_total_kb": ${MEM_TOTAL:-0}
+  },
+  "platform": {
+    "board_model": "$(json_escape "${BOARD_MODEL}")",
+    "board_compatible": "$(json_escape "${BOARD_COMPATIBLE}")",
+    "dmi_product": "$(json_escape "${DMI_PRODUCT}")",
+    "dmi_board": "$(json_escape "${DMI_BOARD}")"
+  },
+  "sgl": {
+    "version": "$(json_escape "${SGL_VERSION}")",
+    "distro_info": "$(json_escape "${DISTRO_INFO}")"
+  },
+  "edac": {
+    "memory_controllers": ${edac_json},
+    "dmesg_ce_count": ${EDAC_CE_DMESG},
+    "dmesg_ue_count": ${EDAC_UE_DMESG},
+    "dmesg_mce_count": ${MCE_COUNT}
+  },
+  "files": {
+    "dmesg_errors": "dmesg_errors.log",
+    "rasdaemon_db": $([ -f "${REPORT_DIR}/ras-mc_event.db" ] && echo '"ras-mc_event.db"' || echo 'null')
+  }
+}
+EOF
+
+# Create tarball
+TARBALL="${OUTPUT_DIR}/sgl-telemetry-${TIMESTAMP}.tar.gz"
+tar -czf "${TARBALL}" -C "${OUTPUT_DIR}" "${TIMESTAMP}"
+
+echo "Telemetry report collected: ${TARBALL}"
+echo "JSON report: ${REPORT_FILE}"
