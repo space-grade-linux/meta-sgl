@@ -1,8 +1,8 @@
 # Building meta-sgl with kas
 
-Here are simple instructions for getting started building the long-term support
-release of Yocto (scarthgap).  Documentation for kas can be found at 
-https://kas.readthedocs.io/en/latest/
+Here are simple instructions for getting started building Space Grade Linux with
+[kas](https://kas.readthedocs.io/en/latest/), the build tool used to drive the
+Yocto/OpenEmbedded builds in this repository.
 
 ## Installing kas
 
@@ -22,10 +22,49 @@ kas configuration by cloning meta-sgl:
 git clone https://github.com/elisa-tech/meta-sgl
 ```
 
+## Choosing a configuration
+
+The build is selected by a top-level kas configuration file under `kas/`. The
+file names follow the pattern:
+
+```
+sgl-<yocto-release>[-spaceros-<distro>][-core]-<machine>.yml
+```
+
+The pieces that compose a configuration live in sub-directories and are pulled
+in via `includes`:
+
+- **Yocto release** (`kas/yocto/`) — `scarthgap` (the current Yocto LTS and the
+  default for SGL), `wrynose` (the newer Yocto LTS), and `master`
+  (development/rolling).
+- **Machine** (`kas/machine/`) — supported QEMU targets are `qemuriscv64`,
+  `qemuarm64`, and `qemux86-64`; hardware targets include `beaglev-fire` and
+  others.
+- **Space ROS** (`kas/spaceros/`) — optional layers adding Space ROS on Jazzy.
+  Releases `jazzy-2025.10` and `jazzy-2026.04` are available.
+
+Some examples of ready-made top-level configurations:
+
+| Configuration | Description |
+| --- | --- |
+| `kas/sgl-scarthgap-qemuriscv64.yml` | Base SGL image, scarthgap, RISC-V QEMU |
+| `kas/sgl-scarthgap-qemux86-64.yml` | Base SGL image, scarthgap, x86-64 QEMU |
+| `kas/sgl-scarthgap-qemuarm64.yml` | Base SGL image, scarthgap, ARM64 QEMU |
+| `kas/sgl-scarthgap-beaglev-fire.yml` | Base SGL image for the BeagleV-Fire board |
+| `kas/sgl-scarthgap-spaceros-jazzy-2026.04-qemux86-64.yml` | Space ROS (full `world`), x86-64 QEMU |
+| `kas/sgl-scarthgap-spaceros-jazzy-2026.04-core-qemux86-64.yml` | Space ROS (`core` package group), x86-64 QEMU |
+
+The base SGL configurations build `core-image-minimal`. The Space ROS
+configurations extend that image with the Space ROS package groups — the
+`-core` variants install `packagegroup-spaceros-jazzy-core` (a smaller set),
+while the non-`core` variants install `packagegroup-spaceros-jazzy-world` (the
+full set).
+
 ## Running kas
 Create a new project directory wherever you want and set the KAS_WORK_DIR 
 environment variable to point to it.  Then run kas with the configuration file
-for Yocto scarthgap release and qemuriscv64.
+of your choice. For example, to build the base SGL image for Yocto scarthgap on
+qemuriscv64:
 
 ```bash
 mkdir $PROJECT_DIR
@@ -39,9 +78,22 @@ This should complete successfully and produce an image you can run in QEMU.
 build/tmp-glibc/deploy/images/qemuriscv64/core-image-minimal-qemuriscv64.rootfs.ext4
 ```
 
+To build a Space ROS image instead, point kas at one of the Space ROS
+configurations, e.g.:
+
+```bash
+kas build meta-sgl/kas/sgl-scarthgap-spaceros-jazzy-2026.04-core-qemux86-64.yml
+```
+
 ## Running QEMU
 
-You can run the images in QEMU by executing them with the proper runtime. Here's an example command:
+You can run the images in QEMU by executing them with the proper runtime. The
+example below is for the `qemuriscv64` image. For the `qemuarm64` and
+`qemux86-64` machines you can also let Yocto assemble the command for you by
+running `runqemu <machine>` from inside the build environment, e.g.
+`kas shell meta-sgl/kas/sgl-scarthgap-qemux86-64.yml -c "runqemu qemux86-64 nographic"`.
+
+Here's an example command for `qemuriscv64`:
 
 ```bash
 cd $KAS_WORK_DIR
