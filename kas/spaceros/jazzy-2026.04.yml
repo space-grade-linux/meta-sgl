@@ -5,6 +5,7 @@ repos:
   spaceros:
     url: "https://github.com/ros/meta-ros.git"
     path: "layers/meta-ros"
+    commit: "43b1db881597bb37740b663c204b33108cfe364c"
     layers:
       meta-ros-common:
       meta-ros2:
