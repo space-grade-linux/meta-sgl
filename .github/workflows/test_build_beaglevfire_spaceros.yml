@@ -12,6 +12,6 @@ jobs:
   build:
     uses: ./.github/workflows/build-sgl.yml
     with:
-      kas_config: sgl-scarthgap-spaceros-jazzy-2026.07-beaglev-fire.yml
+      kas_config: sgl-scarthgap-spaceros-jazzy-2026.07-core-beaglev-fire.yml
       hardware_arch: beaglev-fire
       build_profile: spaceros
