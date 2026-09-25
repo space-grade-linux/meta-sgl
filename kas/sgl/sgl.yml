@@ -5,7 +5,7 @@ distro: "sgl"
 
 repos:
   sgl:
-    url: "https://github.com/elisa-tech/meta-sgl.git"
+    url: "https://github.com/space-grade-linux/meta-sgl.git"
     path: "layers/meta-sgl"
     branch: "main"
     layers:
