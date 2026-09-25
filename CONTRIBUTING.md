@@ -8,7 +8,7 @@ and how the contributor and committer roles work.
 ## Getting the source
 
 ```bash
-git clone https://github.com/elisa-tech/meta-sgl
+git clone https://github.com/space-grade-linux/meta-sgl
 cd meta-sgl
 ```
 
@@ -134,9 +134,9 @@ becomes a committer or a committer steps down or is removed.
 
 ## Communication
 
-- **Issues**: open a [GitHub issue](https://github.com/elisa-tech/meta-sgl/issues)
+- **Issues**: open a [GitHub issue](https://github.com/space-grade-linux/meta-sgl/issues)
   for bugs, build failures, and proposals.
-- **Pull requests**: use [GitHub pull requests](https://github.com/elisa-tech/meta-sgl/pulls)
+- **Pull requests**: use [GitHub pull requests](https://github.com/space-grade-linux/meta-sgl/pulls)
   for code and documentation changes.
 - **Mailing list**: [Mailing List](https://lists.elisa.tech/g/space-grade-linux)
 - **Chat**: [Discord](https://chat.elisa.tech/)
