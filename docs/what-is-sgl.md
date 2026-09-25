@@ -22,6 +22,15 @@ The project started as the Space Grade Linux SIG under the
 [ELISA Project](https://elisa.tech), and the community mailing list, Discord,
 and meeting calendar are still hosted by ELISA.
 
+## Supporting the project
+
+Organizations can support SGL through the Space Grade Linux Fund, a directed
+fund of The Linux Foundation. The Fund raises and budgets money in support of
+the project, and its Governing Board includes a representative of the TSC.
+Technical decisions stay with the TSC. Fund membership requires Linux
+Foundation corporate membership; see [joining the Fund](https://enrollment.lfx.linuxfoundation.org/?project=space-grade-linux-fund) for
+details.
+
 ## Mission
 
 The goal of the project is to advance space technology innovation and
