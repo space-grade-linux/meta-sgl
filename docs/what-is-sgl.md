@@ -9,37 +9,46 @@ SpaceROS.
 
 ## Who's behind the project?
 
-The project is hosted under the [ELISA Project](https://elisa.tech), part of the Linux
-Foundation, and is being stewarded under the Space Grade Linux SIG
-currently under ELISA's TSC, formed by ELISA members and Space industry
-organizations that align with our vision.
+The project is organized as Space Grade Linux a Series of LF Projects, LLC, part of
+the Linux Foundation. Technical oversight belongs to the project's
+[Technical Steering Committee](https://github.com/space-grade-linux/TSC) (TSC),
+as set out in the [Technical Charter](https://github.com/space-grade-linux/TSC/blob/main/CHARTER.md).
+The TSC's voting members are the project's committers, listed in
+[`MAINTAINERS.md`](https://github.com/space-grade-linux/meta-sgl/blob/main/MAINTAINERS.md).
+Changes bigger than a single pull request go through the TSC's
+[RFC process](https://github.com/space-grade-linux/TSC/tree/main/rfcs).
 
-## About the SIG
+The project started as the Space Grade Linux SIG under the
+[ELISA Project](https://elisa.tech), and the community mailing list, Discord,
+and meeting calendar are still hosted by ELISA.
 
-The goal of the group is to advance space technology innovation and
+## Mission
+
+The goal of the project is to advance space technology innovation and
 competitiveness by developing a common Linux distribution that can be used
 in space applications, ready for the challenges of deep space, often long
 lifespan robotic or human-based missions. The nature of space missions brings
 many challenges, from development to deployment there are multiple considerations
-that need to be considered. Furthermore this group is the initial step towards
+that need to be considered. Furthermore this project is the initial step towards
 creating an ecosystem of supported platforms and a community that benefits
 from them, and also from the open source nature of the project.
 
 ## How to collaborate / join?
 
-The Space Grade Linux SIG is recruiting members to embark on a development
+Space Grade Linux welcomes contributors to embark on a development
 journey together with the likes of Boeing, NASA, EASA, and the Linux Foundation.
 
 Joining the ELISA discord server, or the SGL  mailing list is the best way to contribute
 to the project, it’s as simple as registering your email. The second best way
-to collaborate is joining our recurring formation calls, you can find the details
-on the calendar link below. We usually publish the meeting agenda ahead of time
+to collaborate is joining the monthly public project meeting, you can find the
+details on the calendar link below. We usually publish the meeting agenda ahead of time
 on the mailing lists, and have our meetings on Zoom.
 
 ## Resources
 
-* [Mailing List](https://lists.elisa.tech/g/space-grade-linux)
+* [Technical Steering Committee](https://github.com/space-grade-linux/TSC)
+* [Mailing List](https://lists.elisa.tech/g/space-grade-linux) (hosted by ELISA)
 * [ELISA Discord Server](http://chat.elisa.tech/)
-* [Meeting Calendar](https://elisa.tech/community/meetings/)
+* [Meeting Calendar](https://elisa.tech/community/meetings/) (hosted by ELISA)
 
 
