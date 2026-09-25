@@ -132,6 +132,11 @@ See [`MAINTAINERS.md`](MAINTAINERS.md) for the current list of maintainers,
 the Contributor and Committer roles, and the process by which a contributor
 becomes a committer or a committer steps down or is removed.
 
+Project governance lives in the
+[TSC repository](https://github.com/space-grade-linux/TSC): the Technical
+Charter, TSC meeting minutes, and the RFC process for changes bigger than a
+single pull request.
+
 ## Communication
 
 - **Issues**: open a [GitHub issue](https://github.com/space-grade-linux/meta-sgl/issues)
