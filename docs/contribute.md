@@ -81,7 +81,7 @@ static website using [VitePress](https://vitepress.dev/).
 
 1. Clone the meta-sgl repository and change to the docs/ directory:
 ```bash
-git clone https://github.com/elisa-tech/meta-sgl
+git clone https://github.com/space-grade-linux/meta-sgl
 cd meta-sgl/docs/
 ```
 

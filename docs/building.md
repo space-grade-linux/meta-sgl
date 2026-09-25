@@ -19,7 +19,7 @@ After you have sourced the environment where kas is installed you may get the
 kas configuration by cloning meta-sgl:
 
 ```bash
-git clone https://github.com/elisa-tech/meta-sgl
+git clone https://github.com/space-grade-linux/meta-sgl
 ```
 
 ## Choosing a configuration

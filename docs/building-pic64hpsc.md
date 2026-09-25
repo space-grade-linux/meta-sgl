@@ -8,14 +8,14 @@ This documents the procedure to boot a Space Grade Linux (meta-sgl) Yocto image 
 
 ## Step 1: Build Space Grade Linux
 
-Follow the [meta-sgl building guide](https://github.com/elisa-tech/meta-sgl/blob/main/docs/building.md) with the `pic64hpsc` machine target:
+Follow the [meta-sgl building guide](https://github.com/space-grade-linux/meta-sgl/blob/main/docs/building.md) with the `pic64hpsc` machine target:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip3 install kas
 
-git clone https://github.com/elisa-tech/meta-sgl
+git clone https://github.com/space-grade-linux/meta-sgl
 mkdir $PROJECT_DIR
 KAS_WORK_DIR=$PROJECT_DIR kas build meta-sgl/kas/sgl-scarthgap-pic64hpsc.yml
 ```

@@ -10,7 +10,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'GitHub', link: 'https://github.com/elisa-tech/meta-sgl' }
+      { text: 'GitHub', link: 'https://github.com/space-grade-linux/meta-sgl' }
     ],
 
     sidebar: [
@@ -32,7 +32,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/elisa-tech/meta-sgl' },
+      { icon: 'github', link: 'https://github.com/space-grade-linux/meta-sgl' },
       { icon: 'discord', link: 'https://chat.elisa.tech/' }
     ],
 
