@@ -1,0 +1,76 @@
+name: Fault Injection Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  fault-injection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout QEMU
+        uses: actions/checkout@v4
+        with:
+          repository: radshield/qemu-hce
+          path: qemu-hce
+          submodules: false
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential clang meson ninja-build pkg-config \
+            libglib2.0-dev libpixman-1-dev \
+            python3 python3-venv qemu-utils expect socat
+
+      - name: Build QEMU
+        run: |
+          cd qemu-hce
+          CC=clang CXX=clang++ ./configure --target-list=riscv64-softmmu --enable-plugins
+          make -j$(nproc)
+
+      - name: Find latest SGL build run
+        id: find-run
+        run: |
+          RUN_ID=$(gh run list -w "test_build_qemu_riscv64_spaceros.yml" \
+            --repo "${{ github.repository }}" \
+            --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Download SGL image
+        uses: actions/download-artifact@v4
+        with:
+          name: sgl-qemuriscv64-spaceros
+          path: sgl-image
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.find-run.outputs.run-id }}
+
+      - name: Prepare disk image
+        run: |
+          ROOTFS=$(find sgl-image -name '*.ext4' -print -quit)
+          if [ -z "$ROOTFS" ]; then
+            echo "ERROR: No ext4 rootfs found"; ls -R sgl-image/; exit 1
+          fi
+          qemu-img convert -f raw -O qcow2 "$ROOTFS" rootfs.qcow2
+          qemu-img resize rootfs.qcow2 4G
+
+      - name: Create VM snapshot
+        run: |
+          KERNEL=$(find sgl-image \( -name 'Image' -o -name 'Image.gz' \) -print -quit)
+          if [ -z "$KERNEL" ]; then
+            echo "ERROR: No kernel found"; ls -R sgl-image/; exit 1
+          fi
+          expect qemu-hce/fault-injection/save-snapshot.exp "$KERNEL" ./qemu-hce/build/qemu-system-riscv64
+
+      - name: Run fault injection test
+        run: |
+          KERNEL=$(find sgl-image \( -name 'Image' -o -name 'Image.gz' \) -print -quit)
+          expect qemu-hce/fault-injection/fault-injection-test.exp "$KERNEL" ./qemu-hce/build/qemu-system-riscv64
+          echo "Fault injection test passed"
