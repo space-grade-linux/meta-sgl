@@ -115,12 +115,12 @@ jobs:
           mkdir -p "$ARTIFACT_DIR"
           if [ -n "$DEPLOY_DIR" ] && [ -d "$DEPLOY_DIR" ]; then
             echo "Found deploy directory: $DEPLOY_DIR"
-            # Copy images (kernel, rootfs, wic) — follow symlinks, skip massive files
-            for f in "$DEPLOY_DIR"/*.ext4 "$DEPLOY_DIR"/*.tar.bz2 "$DEPLOY_DIR"/*.wic.gz "$DEPLOY_DIR"/*.manifest "$DEPLOY_DIR"/*.qemuboot.conf; do
+            # Copy root filesystems, disk images, block maps, and manifests
+            for f in "$DEPLOY_DIR"/*.ext4 "$DEPLOY_DIR"/*.tar.bz2 "$DEPLOY_DIR"/*.cpio.gz "$DEPLOY_DIR"/*.wic.gz "$DEPLOY_DIR"/*.wic.bmap "$DEPLOY_DIR"/*.manifest "$DEPLOY_DIR"/*.qemuboot.conf; do
               [ -e "$f" ] && cp -L "$f" "$ARTIFACT_DIR"/ 2>/dev/null || true
             done
-            # Copy kernel — it may be named Image, bzImage, or zImage
-            for f in "$DEPLOY_DIR"/Image "$DEPLOY_DIR"/Image.gz "$DEPLOY_DIR"/bzImage "$DEPLOY_DIR"/zImage; do
+            # Copy standalone kernels and bootloaders
+            for f in "$DEPLOY_DIR"/Image "$DEPLOY_DIR"/Image.gz "$DEPLOY_DIR"/bzImage "$DEPLOY_DIR"/zImage "$DEPLOY_DIR"/fitImage "$DEPLOY_DIR"/u-boot.bin; do
               [ -e "$f" ] && cp -L "$f" "$ARTIFACT_DIR"/ 2>/dev/null || true
             done
             # Copy device tree blobs

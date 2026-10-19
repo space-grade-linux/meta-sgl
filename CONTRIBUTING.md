@@ -31,7 +31,7 @@ under QEMU.
 The current value is:
 
 ```
-kirkstone scarthgap walnascar whinlatter
+kirkstone scarthgap walnascar whinlatter wrynose
 ```
 
 `scarthgap` is the release exercised in CI and the default for new targets.

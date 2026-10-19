@@ -6,4 +6,4 @@ header:
 
 local_conf_header:
   spaceros: |
-    IMAGE_INSTALL:append = "packagegroup-spaceros-jazzy-core"
+    IMAGE_INSTALL:append = " packagegroup-spaceros-jazzy-core"

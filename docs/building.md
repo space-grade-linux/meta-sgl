@@ -28,7 +28,7 @@ The build is selected by a top-level kas configuration file under `kas/`. The
 file names follow the pattern:
 
 ```
-sgl-<yocto-release>[-spaceros-<distro>][-core]-<machine>.yml
+sgl-<yocto-release>[-spaceros-<release>][-core]-<machine>.yml
 ```
 
 The pieces that compose a configuration live in sub-directories and are pulled
@@ -41,7 +41,7 @@ in via `includes`:
   `qemuarm64`, and `qemux86-64`; hardware targets include `beaglev-fire` and
   others.
 - **Space ROS** (`kas/spaceros/`) — optional layers adding Space ROS on Jazzy.
-  Releases `jazzy-2025.10` and `jazzy-2026.04` are available.
+  Releases `jazzy-2025.10`, `jazzy-2026.04`, and `jazzy-2026.07` are available.
 
 Some examples of ready-made top-level configurations:
 
@@ -68,7 +68,7 @@ qemuriscv64:
 
 ```bash
 mkdir $PROJECT_DIR
-KAS_WORK_DIR=$PROJECT_DIR
+export KAS_WORK_DIR=$PROJECT_DIR
 kas build meta-sgl/kas/sgl-scarthgap-qemuriscv64.yml
 ```
 
