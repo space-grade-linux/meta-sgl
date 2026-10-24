@@ -25,6 +25,14 @@ This produces the images needed for the Application Complex (Linux side):
 - `build/tmp-glibc/deploy/images/pic64hpsc/core-image-minimal-pic64hpsc.rootfs.cpio.gz`
 - `build/tmp-glibc/deploy/images/pic64hpsc/u-boot.bin`
 
+::: info
+The build needs no GitHub credentials. Microchip's `meta-mchp` layer also recommends a set of
+out-of-tree kernel modules (GPIO, watchdog, PIE, RDMA, ...) built from the private
+`pic64-hpsc-hx/p64h-linux-examples` repository; `kas/machine/pic64hpsc.yml` removes them from
+the image. If you are a member of that organization and want them, drop the
+`MACHINE_*EXTRA_RRECOMMENDS:remove` lines there.
+:::
+
 ## Step 2: Build and Run with p64h-linux-examples
 
 The PIC64-HPSC QEMU machine model and SDK tooling are not publicly available. Acquire access through Microchip to the following:
@@ -93,7 +101,7 @@ OpenSBI origin_p64h-v1.8.0_dev
 Platform Name               : microchip,p64h-dev
 Platform HART Count         : 8
 ...
-[    0.000000] Linux version 6.12.22-linux4microchip+fpga-2025.07-...
+[    0.000000] Linux version 6.18.35-linux4microchip-2026.04.2-rt5-...
 [    0.000000] Machine model: microchip,p64h-dev
 ...
 Space Grade Linux 0.1 pic64hpsc ttyS0

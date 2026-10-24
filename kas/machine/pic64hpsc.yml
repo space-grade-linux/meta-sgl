@@ -10,3 +10,20 @@ repos:
     layers:
       meta-mchp-common:
       meta-mchp-pic64hpsc:
+
+local_conf_header:
+  pic64hpsc-no-private-sources: |
+    # meta-mchp p64h-v2.3.0 builds out-of-tree kernel modules from the private
+    # pic64-hpsc-hx/p64h-linux-examples repository (fetched over SSH) and recommends
+    # them for every image. Drop them so the build needs no GitHub credentials.
+    MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS:remove = "kernel-module-p64h-gpio kernel-module-p64h-wdt"
+    MACHINE_EXTRA_RRECOMMENDS:remove = " \
+        kernel-module-grovf-rdma \
+        kernel-module-p64h-hpt \
+        kernel-module-p64h-ipc-demo \
+        kernel-module-p64h-pcie \
+        kernel-module-p64h-pie \
+        kernel-module-p64h-uio \
+        kernel-module-spi-microchip-p64h-xspi \
+        kernel-module-x288-l2pf \
+    "
