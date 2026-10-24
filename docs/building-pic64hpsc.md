@@ -25,6 +25,11 @@ This produces the images needed for the Application Complex (Linux side):
 - `build/tmp-glibc/deploy/images/pic64hpsc/core-image-minimal-pic64hpsc.rootfs.cpio.gz`
 - `build/tmp-glibc/deploy/images/pic64hpsc/u-boot.bin`
 
+::: warning
+The P64H SDK ships x86_64-only binaries. On an aarch64 host, follow the
+[arm64 companion guide](./building-pic64hpsc-arm64.md) for the extra steps.
+:::
+
 ## Step 2: Build and Run with p64h-linux-examples
 
 The PIC64-HPSC QEMU machine model and SDK tooling are not publicly available. Acquire access through Microchip to the following:
